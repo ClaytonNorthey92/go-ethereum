@@ -701,6 +701,8 @@ func (st *stateTransition) execute() (*ExecutionResult, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		log.Info("checking floor against limit", "msg.GasLimit", msg.GasLimit, "floorDataGas", floorDataGas)
 		// Make sure the transaction has sufficient gas allowance to
 		// pay the floor cost.
 		if msg.GasLimit < floorDataGas {
