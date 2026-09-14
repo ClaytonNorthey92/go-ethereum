@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"log/slog"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/tracing"
@@ -195,6 +196,8 @@ func intrinsicBaseGasEIP2780(from common.Address, to *common.Address, value *uin
 
 // FloorDataGas computes the minimum gas required for a transaction based on its data tokens (EIP-7623).
 func FloorDataGas(rules params.Rules, from common.Address, to *common.Address, value *uint256.Int, data []byte, accessList types.AccessList) (uint64, error) {
+	slog.Info("FloorDataGas called", "rules.IsAmsterdam", rules.IsAmsterdam)
+	
 	var (
 		tokens    uint64
 		tokenCost uint64
