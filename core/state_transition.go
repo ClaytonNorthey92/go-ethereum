@@ -220,12 +220,16 @@ func FloorDataGas(rules params.Rules, from common.Address, to *common.Address, v
 		}
 		tokens += addresses * addressTokenCost
 
+		log.Info("added address token cost", "addresses", addresses, "cost", addressTokenCost, "tokens", tokens)
+
 		const storageKeyTokenCost = uint64(common.HashLength) * params.TxTokenPerNonZeroByte
 		storageKeys := uint64(accessList.StorageKeys())
 		if (math.MaxUint64-tokens)/storageKeyTokenCost < storageKeys {
 			return 0, ErrGasUintOverflow
 		}
 		tokens += storageKeys * storageKeyTokenCost
+
+		log.Info("added storage key token cost", "storage keys", storageKeys, "cost", storageKeyTokenCost, "tokens", tokens)
 	} else {
 		var (
 			z  = uint64(bytes.Count(data, []byte{0}))
