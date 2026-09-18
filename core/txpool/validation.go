@@ -129,10 +129,12 @@ func ValidateTransaction(tx *types.Transaction, head *types.Header, signer types
 	}
 	// Ensure the transaction has more gas than the bare minimum needed to cover
 	// the transaction metadata
+	log.Info("ValidateTransaction: IntrinsicGas", "tx.AccessList", tx.AccessList())
 	intrGas, err := core.IntrinsicGas(tx.Data(), tx.AccessList(), tx.SetCodeAuthorizations(), from, tx.To(), value, rules)
 	if err != nil {
 		return err
 	}
+	log.Info("computed intrGas", "intrGas", intrGas)
 	if tx.Gas() < intrGas {
 		return fmt.Errorf("%w: gas %v, minimum needed %v", core.ErrIntrinsicGas, tx.Gas(), intrGas)
 	}
