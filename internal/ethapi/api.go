@@ -1682,6 +1682,8 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 //
 // This API is not capable for submitting blob transaction with sidecar.
 func (api *TransactionAPI) SendTransaction(ctx context.Context, args TransactionArgs) (common.Hash, error) {
+	log.Info("SendTransaction: received transaction args", "args", args)
+
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: args.from()}
 
