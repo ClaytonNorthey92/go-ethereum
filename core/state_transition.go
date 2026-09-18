@@ -141,6 +141,7 @@ func IntrinsicGas(data []byte, accessList types.AccessList, authList []types.Set
 		}
 		gas += storageKeys * storageKeyCost
 		
+		log.Info("IntrinsicGas checking Amsterdam")
 		// EIP-7981: access list data is charged in addition to the base charge.
 		if rules.IsAmsterdam {
 			log.Info("IntrinsicGas in Amsterdam")
