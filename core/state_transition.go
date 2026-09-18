@@ -24,6 +24,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/tracing"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -139,9 +140,10 @@ func IntrinsicGas(data []byte, accessList types.AccessList, authList []types.Set
 			return 0, ErrGasUintOverflow
 		}
 		gas += storageKeys * storageKeyCost
-
+		
 		// EIP-7981: access list data is charged in addition to the base charge.
 		if rules.IsAmsterdam {
+			log.Info("IntrinsicGas in Amsterdam")
 			const (
 				addressCost    = common.AddressLength * params.TxCostFloorPerToken7976 * params.TxTokenPerNonZeroByte
 				storageKeyCost = common.HashLength * params.TxCostFloorPerToken7976 * params.TxTokenPerNonZeroByte
@@ -154,6 +156,7 @@ func IntrinsicGas(data []byte, accessList types.AccessList, authList []types.Set
 				return 0, ErrGasUintOverflow
 			}
 			gas += storageKeys * storageKeyCost
+			log.Info("IntrinsicGas in Amsterdam computed", "storageKeys", storageKeys * storageKeyCost, "addressCost", addresses * addressCost)
 		}
 	}
 	return gas, nil
