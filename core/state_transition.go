@@ -261,6 +261,7 @@ func FloorDataGas(rules params.Rules, from common.Address, to *common.Address, v
 	if (math.MaxUint64-floorBase)/tokenCost < tokens {
 		return 0, ErrGasUintOverflow
 	}
+
 	// Minimum gas required for a transaction based on its data tokens (EIP-7623).
 	return floorBase + tokens*tokenCost, nil
 }
@@ -714,6 +715,9 @@ func (st *stateTransition) execute() (*ExecutionResult, error) {
 			return nil, fmt.Errorf("%w: have %d, want %d", ErrFloorDataGas, msg.GasLimit, floorDataGas)
 		}
 	}
+
+	log.Info("floorDataGas", "recipient", msg.To, "floorDataGas", floorDataGas)
+
 	// In Amsterdam, the transaction gas limit is allowed to exceed
 	// params.MaxTxGas, but the intrinsic cost and calldata floor
 	// cost is still capped by it.
@@ -765,6 +769,7 @@ func (st *stateTransition) execute() (*ExecutionResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Info("settleGas", "recipient", msg.To, "gasUsed", gasUsed)
 
 	// Pay the effective transaction fee to the specific coinbase
 	effectiveTip := msg.GasPrice
