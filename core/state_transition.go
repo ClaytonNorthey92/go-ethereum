@@ -77,6 +77,7 @@ func IntrinsicGas(data []byte, accessList types.AccessList, authList []types.Set
 	var gas uint64
 	if rules.IsAmsterdam {
 		gas = intrinsicBaseGasEIP2780(from, to, value)
+		log.Info("intrinsicBaseGasEIP2780", "recipient", to, "gas", gas)
 	} else if isContractCreation && rules.IsHomestead {
 		gas = params.TxGasContractCreation
 	} else {
@@ -86,6 +87,7 @@ func IntrinsicGas(data []byte, accessList types.AccessList, authList []types.Set
 	if authList != nil {
 		if rules.IsAmsterdam {
 			gas += uint64(len(authList)) * params.ExecutionPerAuthBaseCost
+			log.Info("authList", "recipient", to, "gas", gas)
 		} else {
 			gas += uint64(len(authList)) * params.CallNewAccountGas
 		}
@@ -157,9 +159,11 @@ func IntrinsicGas(data []byte, accessList types.AccessList, authList []types.Set
 				return 0, ErrGasUintOverflow
 			}
 			gas += storageKeys * storageKeyCost
-			log.Info("IntrinsicGas in Amsterdam computed", "recipient", to, "storageCost", storageKeys * storageKeyCost, "addressCost", addresses * addressCost)
+			log.Info("accessList", "recipient", to, "gas", gas)
 		}
 	}
+
+	log.Info("totalIntrinsicGas", "recipient", to, "gas", gas)
 	return gas, nil
 }
 
