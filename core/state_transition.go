@@ -194,6 +194,8 @@ func intrinsicBaseGasEIP2780(from common.Address, to *common.Address, value *uin
 	default:
 		gas += params.TxValueCost2780
 	}
+
+	log.Info("intrinsicBaseGasEIP2780", "recipient", to, "gas", gas)
 	return gas
 }
 
