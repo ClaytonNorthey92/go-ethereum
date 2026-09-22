@@ -157,7 +157,7 @@ func IntrinsicGas(data []byte, accessList types.AccessList, authList []types.Set
 				return 0, ErrGasUintOverflow
 			}
 			gas += storageKeys * storageKeyCost
-			log.Info("IntrinsicGas in Amsterdam computed", "storageKeys", storageKeys * storageKeyCost, "addressCost", addresses * addressCost)
+			log.Info("IntrinsicGas in Amsterdam computed", "recipient", to, "storageCost", storageKeys * storageKeyCost, "addressCost", addresses * addressCost)
 		}
 	}
 	return gas, nil
