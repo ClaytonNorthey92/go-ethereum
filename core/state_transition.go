@@ -262,7 +262,7 @@ func FloorDataGas(rules params.Rules, from common.Address, to *common.Address, v
 			return 0, ErrGasUintOverflow
 		}
 		
-	log.Info("miniumumGas", "recipient", to, "floorBase", floorBase, "tokens*tokenCost", tokens*tokenCost)
+	log.Info("miniumumGas", "recipient", to, "floorBase", floorBase, "tokens*tokenCost", tokens*tokenCost, "accessList.StorageKeys()", accessList.StorageKeys(), "accessList.addresses", len(accessList))
 	// Minimum gas required for a transaction based on its data tokens (EIP-7623).
 	return floorBase + tokens*tokenCost, nil
 }
