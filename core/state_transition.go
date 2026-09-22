@@ -233,35 +233,36 @@ func FloorDataGas(rules params.Rules, from common.Address, to *common.Address, v
 			return 0, ErrGasUintOverflow
 		}
 		tokens += storageKeys * storageKeyTokenCost
-	} else {
-		var (
-			z  = uint64(bytes.Count(data, []byte{0}))
-			nz = uint64(len(data)) - z
-		)
-		// Pre-Amsterdam
-		if math.MaxUint64/params.TxTokenPerNonZeroByte < nz {
+		} else {
+			var (
+				z  = uint64(bytes.Count(data, []byte{0}))
+				nz = uint64(len(data)) - z
+			)
+			// Pre-Amsterdam
+			if math.MaxUint64/params.TxTokenPerNonZeroByte < nz {
+				return 0, ErrGasUintOverflow
+			}
+			tokens = nz * params.TxTokenPerNonZeroByte
+			if math.MaxUint64-tokens < z {
+				return 0, ErrGasUintOverflow
+			}
+			tokens += z
+			tokenCost = params.TxCostFloorPerToken
+		}
+		
+		// The floor is anchored to the transaction base cost. Under EIP-2780 that
+		// base is the per-resource decomposition (the same one used by the intrinsic
+		// gas), so the floor never undercuts the transaction's own base.
+		floorBase := params.TxGas
+		if rules.IsAmsterdam {
+			floorBase = intrinsicBaseGasEIP2780(from, to, value)
+		}
+		// Check for overflow
+		if (math.MaxUint64-floorBase)/tokenCost < tokens {
 			return 0, ErrGasUintOverflow
 		}
-		tokens = nz * params.TxTokenPerNonZeroByte
-		if math.MaxUint64-tokens < z {
-			return 0, ErrGasUintOverflow
-		}
-		tokens += z
-		tokenCost = params.TxCostFloorPerToken
-	}
-
-	// The floor is anchored to the transaction base cost. Under EIP-2780 that
-	// base is the per-resource decomposition (the same one used by the intrinsic
-	// gas), so the floor never undercuts the transaction's own base.
-	floorBase := params.TxGas
-	if rules.IsAmsterdam {
-		floorBase = intrinsicBaseGasEIP2780(from, to, value)
-	}
-	// Check for overflow
-	if (math.MaxUint64-floorBase)/tokenCost < tokens {
-		return 0, ErrGasUintOverflow
-	}
-
+		
+	log.Info("miniumumGas", "recipient", to, "floorBase", floorBase, "tokens*tokenCost", tokens*tokenCost)
 	// Minimum gas required for a transaction based on its data tokens (EIP-7623).
 	return floorBase + tokens*tokenCost, nil
 }
